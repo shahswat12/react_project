@@ -28,6 +28,7 @@ jobs:
       run: npm install -g npm@6  # Use npm version 6
 
     - name: Install dependencies
+       working-directory: /home/runner/work/react_project/react_project/my-react-app
       run: npm ci
 
     - name: Build application
