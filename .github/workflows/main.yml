@@ -21,7 +21,7 @@ jobs:
 
       - name: Capture Vercel preview URL
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCELTOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCELTOKENA }}
         run: |
           npm install -g vercel
           echo "Installing Vercel CLI..."
