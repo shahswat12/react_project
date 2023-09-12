@@ -1,0 +1,42 @@
+name: Build and Deploy with Preview URL
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+
+      - name: Deploy to Vercel
+        run: npx vercel --confirm -t ${{ secrets.VERCELTOKEN }} -m githubCommitSha=b4a04c48f6af2e174699cf4a5f966e9f294cc1a4 -m githubCommitAuthorName=shahswat12 -m githubCommitAuthorLogin=shahswat12 -m githubDeployment=1 -m githubOrg=shahswat12 -m githubRepo=react-gh-pages -m githubCommitOrg=shahswat12 -m githubCommitRepo=react-gh-pages -m githubCommitMessage="Merge 45e5b13d1c9c8183789dc5e86cd034886168eb00 into 66866294f2264db7bd83b3c5ed1d2e271b278090"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"  # Optional, increases memory limit for the Node process
+
+      - name: Capture Vercel preview URL
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCELTOKEN }}
+        run: |
+          npm install -g vercel
+          echo "Installing Vercel CLI..."
+          echo "Capturing Vercel preview URL..."
+          VERCEL_URL=$(vercel --token $VERCEL_TOKEN --prod | grep -o 'https://[a-zA-Z0-9.-]*')
+          echo "Vercel preview URL: $VERCEL_URL"
+
+      - name: Post Preview URL as Comment
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Preview URL: ' + process.env.VERCEL_URL
+            })
